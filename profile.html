@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+        }
+
+        header {
+            background: #1976d2;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .container {
+            max-width: 500px;
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #1976d2;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info {
+            width: 100%;
+        }
+
+        .info p {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #f9f9f9;
+            border-left: 4px solid #1976d2;
+            border-radius: 6px;
+        }
+
+        .info strong {
+            display: inline-block;
+            width: 90px;
+            color: #444;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .actions button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .actions button:hover {
+            background-color: #125ea6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>Profile</header>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="avatar" id="avatar">
+                <span id="avatar-letter">U</span>
+            </div>
+            <input type="file" accept="image/*" onchange="updateAvatar(event)" />
+
+            <div class="info">
+                <p><strong>Name:</strong> <span id="profile-name">John Doe</span></p>
+                <p><strong>Email:</strong> <span id="profile-email">john@example.com</span></p>
+                <p><strong>Contact:</strong> <span id="profile-contact">9876543210</span></p>
+                <p><strong>Username:</strong> <span id="profile-username">johndoe</span></p>
+            </div>
+
+            <div class="actions">
+                <button onclick="changePassword()">Change Password</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById("avatar").innerHTML = `<img src="${e.target.result}" alt="Avatar" />`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function changePassword() {
+            const newPassword = prompt("Enter your new password:");
+            if (newPassword && newPassword.length >= 6) {
+                alert("Password updated successfully!");
+                // Simulate password update
+            } else {
+                alert("Password must be at least 6 characters long.");
+            }
+        }
+
+        function logout() {
+            alert("You have been logged out.");
+            window.location.href = "login.html"; // Change as needed
+        }
+    </script>
+
+</body>
+
+</html>
