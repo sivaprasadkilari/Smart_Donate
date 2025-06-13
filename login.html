@@ -1,217 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            background: #1976d2;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 2rem auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        input,
-        select,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 0.5rem 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            background: #1976d2;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #125ea6;
-        }
-
-        #dashboard {
-            display: none;
-        }
-
-        .donation-entry {
-            background: #e3f2fd;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
-        }
-
-        #signup-section {
-            display: none;
-        }
-
-        .link-btn {
-            background: none;
-            border: none;
-            color: #1976d2;
-            text-decoration: underline;
-            cursor: pointer;
-            padding: 0;
-            margin-top: 10px;
-            display: block;
-            text-align: center;
-        }
-        
-        .link-btn:hover {
-            background: none;
-            border: none;
-            color: #1976d2;
-            text-decoration: underline;
-            cursor: pointer;
-            padding: 0;
-            margin-top: 10px;
-            display: block;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - SmartDonate</title>
 </head>
-
 <body>
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required><br><br>
+    <input type="password" id="password" placeholder="Password" required><br><br>
+    <button type="submit">Login</button>
+  </form>
 
-    <header>
-        <h1>SmartDonate</h1>
-    </header>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-    <div class="container" id="auth-page">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Enter username or email" />
-        <input type="password" id="password" placeholder="Enter password" />
-        <button id="loginBtn">Login</button>
-        <button class="link-btn" onclick="toggleSignup(true)">New user? Sign up here</button>
-    </div>
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-    <div class="container" id="signup-section">
-        <h2>Sign Up</h2>
-        <input type="text" id="new-name" placeholder="Full Name" />
-        <input type="email" id="new-email" placeholder="Email Address" />
-        <input type="text" id="new-contact" placeholder="Contact Number" />
-        <input type="text" id="new-username" placeholder="Username" />
-        <input type="password" id="new-password" placeholder="Password" />
-        <button onclick="signup()">Sign Up</button>
-        <button class="link-btn" onclick="toggleSignup(false)">Back to Login</button>
-    </div>
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    <div class="container" id="get-started-page" style="display:none;">
-        <h2>Welcome, <span id="displayName"></span>!</h2>
-        <button onclick="goToDonate()">Donate Now</button>
-        <button onclick="logout()">Logout</button>
-    </div>
+      const data = await res.json();
 
-    <div class="container" id="donate-page" style="display:none;">
-        <h2>Make a Donation</h2>
-        <input type="text" id="donorName" placeholder="Your Name" />
-        <input type="number" id="donationAmount" placeholder="Donation Amount (₹)" />
-        <input type="text" id="donationPurpose" placeholder="Purpose (e.g. Education, Health)" />
-        <select id="paymentMethod">
-            <option value="">Select Payment Method</option>
-            <option>UPI</option>
-            <option>Card</option>
-            <option>Bank Transfer</option>
-        </select>
-        <button onclick="submitDonation()">Donate</button>
-        <button onclick="showDashboard()">View Donations</button>
-        <button onclick="logout()">Logout</button>
-    </div>
-
-    <div class="container" id="dashboard">
-        <h2>Your Donations</h2>
-        <div id="donationList"></div>
-        <button onclick="goToDonate()">Donate More</button>
-        <button onclick="logout()">Logout</button>
-    </div>
-    <script>
-        const users = {};
-        let currentUser = "";
-
-        function toggleSignup(showSignup) {
-            document.getElementById('auth-page').style.display = showSignup ? 'none' : 'block';
-            document.getElementById('signup-section').style.display = showSignup ? 'block' : 'none';
-        }
-
-        function validatePassword(password) {
-            return password.length >= 8 && /[A-Z]/.test(password) && /[^a-zA-Z0-9]/.test(password);
-        }
-
-        function signup() {
-            const name = document.getElementById('new-name').value;
-            const email = document.getElementById('new-email').value;
-            const contact = document.getElementById('new-contact').value;
-            const uname = document.getElementById('new-username').value;
-            const pwd = document.getElementById('new-password').value;
-
-            if (!name || !email || !contact || !uname || !pwd) {
-                alert('Fill all the details.');
-                return;
-            }
-
-            if (!validatePassword(pwd)) {
-                alert('Password must be at least 8 characters long with at least one special character and one uppercase letter.');
-                return;
-            }
-
-            users[uname] = { name, email, contact, password: pwd };
-            alert('User registered successfully!');
-            toggleSignup(false);
-        }
-
-        function login() {
-            const input = document.getElementById('username').value;
-            const pwd = document.getElementById('password').value;
-
-            let found = false;
-            for (let uname in users) {
-                if ((uname === input || users[uname].email === input) && users[uname].password === pwd) {
-                    currentUser = uname;
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) {
-                // Store in localStorage (optional, for use in main.html)
-                localStorage.setItem("currentUser", JSON.stringify(users[currentUser]));
-                window.location.href = "main.html";
-            } else {
-                alert('Invalid credentials or user not registered.');
-            }
-        }
-
-        document.getElementById('loginBtn').addEventListener('click', function (e) {
-            e.preventDefault();
-            login();
-        });
-    </script>
-    
+      if (data.success) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = "main.html";
+      } else {
+        alert(data.message);
+      }
+    });
+  </script>
 </body>
-
 </html>
